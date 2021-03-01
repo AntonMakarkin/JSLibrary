@@ -8,7 +8,7 @@ $('div').click(function() {
     console.log($(this).index());
 });
 
-console.log($('.findme').siblings());
+$('button').fadeIn(1800);
 //console.log($('.some').closest('.findme'));
 //console.log($('div').eq(2).find('.some'));
 
