@@ -56,3 +56,30 @@ $.prototype.fadeOut = function(dur, fin) {
 
     return this;
 };
+
+$.prototype.fadeToggle = function(dur, display, fin) {
+    for (let i = 0; i < this.length; i++) {
+        if (window.getComputedStyle(this[i]).display === 'none') {
+            this[i].style.display = display || 'block'; //if display is null - return 'block' (old version)
+
+            const _fadeIn = (complection) => { //changing opacity from 0 to 1
+                this[i].style.opacity = complection;
+            };
+
+            const anim = this.animateOverTime(dur, _fadeIn, fin);
+            requestAnimationFrame(anim);
+        } else {
+            const _fadeOut = (complection) => {
+                this[i].style.opacity = 1 - complection; //more transparent with every step
+                if (complection === 1) {
+                    this[i].style.display = 'none'; //if the animation is complete and opacity = 0
+                }
+            };
+    
+            const anim = this.animateOverTime(dur, _fadeOut, fin);
+            requestAnimationFrame(anim);          
+        }
+    }
+
+    return this;
+};
