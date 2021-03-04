@@ -12,7 +12,7 @@ $('button').eq(2).on('click', () => {
     $('.w-500').fadeToggle(800);
 });
 
-$('.wrap').html(
+/*$('.wrap').html(
     `
     <div class="dropdown">
         <button class="btn btn-primary dropdown-toggle" id="dropdownMenuBtn">Dropdown button</button>
@@ -22,7 +22,7 @@ $('.wrap').html(
             <a href="#" class="dropdown-item">Action #3</a>
         </div>
     </div>`
-);
+);*/
 
-$('.dropdown-toggle').dropdown();
+//$('.dropdown-toggle').dropdown();
 
