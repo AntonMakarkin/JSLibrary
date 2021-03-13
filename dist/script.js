@@ -123,32 +123,112 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core */ "./src/js/lib/core.js");
 
 
-_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.modal = function () {
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.modal = function (animTime, created) {
   for (let i = 0; i < this.length; i++) {
     const target = this[i].getAttribute('data-target');
+    let scroll = calcScroll();
     Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(this[i]).click(e => {
       e.preventDefault();
-      Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(target).fadeIn(500);
+      Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(target).fadeIn(animTime);
       document.body.style.overflow = 'hidden';
+      document.body.style.marginRight = `${scroll}px`; //add false scroll
+    });
+    const closeElements = document.querySelectorAll(`${target} [data-close]`); //close only that modal which we want
+
+    closeElements.forEach(elem => {
+      Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(elem).click(() => {
+        hideModaladdScroll(target);
+      });
+    });
+    Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(target).click(e => {
+      if (e.target.classList.contains('modal')) {
+        hideModaladdScroll(target);
+      }
     });
   }
 
-  const closeElements = document.querySelectorAll('[data-close]');
-  closeElements.forEach(elem => {
-    Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(elem).click(() => {
-      Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])('.modal').fadeOut(500);
+  function hideModaladdScroll(modal) {
+    setTimeout(() => {
       document.body.style.overflow = '';
-    });
-  });
-  Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])('.modal').click(e => {
-    if (e.target.classList.contains('modal')) {
-      Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])('.modal').fadeOut(500);
-      document.body.style.overflow = '';
-    }
-  });
+      document.body.style.marginRight = `0px`; //remove false scroll
+
+      if (created) {
+        document.querySelector(modal).remove();
+      }
+    }, animTime);
+    Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(modal).fadeOut(animTime);
+  }
+
+  function calcScroll() {
+    //function to calculate width od scrollLine
+    let div = document.createElement('div');
+    div.style.width = '60px';
+    div.style.height = '60px';
+    div.style.overflowY = 'scroll';
+    div.style.visibility = 'hidden';
+    document.body.appendChild(div);
+    let scrollWidth = div.offsetWidth - div.clientWidth;
+    div.remove();
+    return scrollWidth;
+  }
 };
 
-Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])('[data-toggle="modal"]').modal();
+_core__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.createModal = function ({
+  animTime,
+  text,
+  btns
+} = {}) {
+  for (let i = 0; i < this.length; i++) {
+    let modal = document.createElement('div');
+    modal.classList.add('modal');
+    modal.setAttribute('id', this[i].getAttribute('data-target').slice(1)); //the string without first symbol
+    // btns = {animTime: time, count: num, settings: [[text, classNames=[], close, cb]]}
+
+    const buttons = [];
+
+    for (let j = 0; j < btns.count; j++) {
+      let btn = document.createElement('button');
+      btn.classList.add('btn', ...btns.settings[j][1]);
+      btn.textContent = btns.settings[j][0];
+
+      if (btns.settings[j][2]) {
+        btn.setAttribute('data-close', 'true');
+      }
+
+      if (btns.settings[j][3] && typeof btns.settings[j][3] === 'function') {
+        btn.addEventListener('click', btns.settings[j][3]);
+      }
+
+      buttons.push(btn);
+    }
+
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button class="close" data-close>
+                    <span>&times;</span>
+                </button>
+                <div class="modal-header">
+                    <div class="modal-title">
+                        ${text.title}
+                    </div>
+                </div>
+                <div class="modal-body">
+                    ${text.body}
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+        `;
+    modal.querySelector('.modal-footer').append(...buttons); //insert buttons in the modal
+
+    document.body.append(modal); //insert the modal
+
+    Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(this[i].getAttribute('data-target')).fadeIn(animTime); //fadeIn the modal after creating
+
+    Object(_core__WEBPACK_IMPORTED_MODULE_0__["default"])(this[i]).modal(animTime, true); //making the modal interactive
+  }
+};
 
 /***/ }),
 
@@ -672,6 +752,22 @@ Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('[data-count="second"]'
 Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('button').eq(2).on('click', () => {
   Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('.w-500').fadeToggle(800);
 });
+Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('[data-toggle="modal"]').modal(500);
+Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('#trigger').click(() => Object(_lib_lib__WEBPACK_IMPORTED_MODULE_0__["default"])('#trigger').createModal({
+  animTime: 300,
+  text: {
+    title: 'Modal title',
+    body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus nobis quaerat eligendi est fugit enim tempora commodi suscipit? Aliquam nisi itaque quibusdam molestias placeat neque, et asperiores at ipsa explicabo!'
+  },
+  btns: {
+    count: 3,
+    settings: [['Close', ['btn-danger', 'mr-10'], true], ['Safe changes', ['btn-success'], false, () => {
+      alert('Данные сохранены');
+    }], ['Another btn', ['btn-warning', 'ml-10'], false, () => {
+      alert('Hello world');
+    }]]
+  }
+}));
 /*$('.wrap').html(
     `
     <div class="dropdown">
