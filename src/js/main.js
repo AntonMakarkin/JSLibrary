@@ -48,6 +48,8 @@ $('#trigger').click(() => $('#trigger').createModal({
     }
 }));
 
+$('.carousel').carousel();
+
 /*$('.wrap').html(
     `
     <div class="dropdown">
