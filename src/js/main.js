@@ -50,6 +50,9 @@ $('#trigger').click(() => $('#trigger').createModal({
 
 $('.carousel').carousel();
 
+$().get('https://gorest.co.in/public-api/users')
+    .then(res => console.log(res));
+
 /*$('.wrap').html(
     `
     <div class="dropdown">

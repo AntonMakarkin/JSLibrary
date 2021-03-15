@@ -68,3 +68,9 @@ $.prototype.carousel = function() {
         });
     }
 };
+
+//I have to made programm creation of the slider
+
+$.prototype.createCarousel = function() {
+
+};
